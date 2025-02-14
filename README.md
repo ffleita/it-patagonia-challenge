@@ -29,3 +29,11 @@ El stack tecnológico utilizado es el siguiente:
 
 El principal desafío que encontré fue implementar los conceptos de casos de uso, puertos y adaptadores. Pude abstraer las capas domain y application de las dependencias externas incorporadas por SpringBoot. Para proyectos chicos
 no parece una solución óptima ya que la implementación es compleja, pero para proyectos grandes es una solución robusta.
+
+### Paths expuestos para cada servicio
+- /empresas/added/date GET
+- /empresas/transferencias/date GET
+- /empresas POST body: {
+        "cuit": 30123456781,
+        "razonSocial": "Empresa"
+    }
