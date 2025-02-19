@@ -1,6 +1,9 @@
 package com.it_patagonia_challenge.it_patagonia_challenge.application.service;
 
 import com.it_patagonia_challenge.it_patagonia_challenge.application.util.DateUtils;
+import com.it_patagonia_challenge.it_patagonia_challenge.domain.exception.DuplicatedEmpresaException;
+import com.it_patagonia_challenge.it_patagonia_challenge.domain.exception.EmpresasNotFoundException;
+import com.it_patagonia_challenge.it_patagonia_challenge.domain.exception.MissingRequiredAttributeException;
 import com.it_patagonia_challenge.it_patagonia_challenge.domain.model.Empresa;
 import com.it_patagonia_challenge.it_patagonia_challenge.domain.port.out.EmpresaRepositoryPort;
 import org.junit.jupiter.api.AfterEach;
@@ -63,14 +66,13 @@ class EmpresaServiceTest
 	}
 
 	@Test
-	void findEmpresasByTransacciones_ShouldReturnEmptyList()
+	void findEmpresasByTransacciones_ShouldThrowEmpresasNotFoundException()
 	{
 
 		when(empresaRepositoryPort.getEmpresasByTransferDate(dummyDate)).thenReturn(List.of());
 
-		List<Empresa> empresas = empresaService.findEmpresasByTransacciones();
+		assertThrows(EmpresasNotFoundException.class, () -> empresaService.findEmpresasByTransacciones());
 
-		assertEquals(0, empresas.size());
 		verify(empresaRepositoryPort, times(1)).getEmpresasByTransferDate(dummyDate);
 	}
 
@@ -96,9 +98,8 @@ class EmpresaServiceTest
 	{
 		when(empresaRepositoryPort.getEmpresasByAddedDate(dummyDate)).thenReturn(List.of());
 
-		List<Empresa> empresas = empresaService.findEmpresasByAddedDate();
+		assertThrows(EmpresasNotFoundException.class, () -> empresaService.findEmpresasByAddedDate());
 
-		assertEquals(0, empresas.size());
 		verify(empresaRepositoryPort, times(1)).getEmpresasByAddedDate(dummyDate);
 	}
 
@@ -116,5 +117,50 @@ class EmpresaServiceTest
 		assertEquals("Empresa 1", empresa.getRazonSocial());
 		assertNotNull(empresa.getFechaAdhesion());
 		verify(empresaRepositoryPort, times(1)).save(any(Empresa.class));
+	}
+
+	@Test
+	void createEmpresa_shouldThrowExceptionDueToMissingRazonSocial()
+	{
+		Empresa nuevaEmpresa = new Empresa(111L, "", null);
+		assertThrows(MissingRequiredAttributeException.class, () -> empresaService.createEmpresa(nuevaEmpresa));
+		verify(empresaRepositoryPort, times(0)).save(any(Empresa.class));
+
+		Empresa nuevaEmpresa2 = new Empresa(111L, null, null);
+		assertThrows(MissingRequiredAttributeException.class, () -> empresaService.createEmpresa(nuevaEmpresa2));
+		verify(empresaRepositoryPort, times(0)).save(any(Empresa.class));
+	}
+
+	@Test
+	void createEmpresa_shouldThrowExceptionDueToMissingCuit()
+	{
+		Empresa nuevaEmpresa = new Empresa(null, "Empresa 1", null);
+
+		assertThrows(MissingRequiredAttributeException.class, () -> empresaService.createEmpresa(nuevaEmpresa));
+		verify(empresaRepositoryPort, times(0)).save(any(Empresa.class));
+	}
+
+	@Test
+	void createEmpresa_shouldThrowExceptionDueToDuplicatedEmpresa_CuitCase()
+	{
+		Empresa empresa = new Empresa(1L, "Empresa 1", null);
+		Empresa nuevaEmpresa = new Empresa(1L, "Empresa 1", null);
+
+		when(empresaRepositoryPort.findEmpresaByCuit(any())).thenReturn(nuevaEmpresa);
+
+		assertThrows(DuplicatedEmpresaException.class, () -> empresaService.createEmpresa(empresa));
+		verify(empresaRepositoryPort, times(0)).save(any(Empresa.class));
+	}
+
+	@Test
+	void createEmpresa_shouldThrowExceptionDueToDuplicatedEmpresa_RazonSocialCase()
+	{
+		Empresa empresa = new Empresa(1L, "Empresa 1", null);
+		Empresa nuevaEmpresa = new Empresa(1L, "Empresa 1", null);
+
+		when(empresaRepositoryPort.findEmpresaByRazonSocial(any())).thenReturn(nuevaEmpresa);
+
+		assertThrows(DuplicatedEmpresaException.class, () -> empresaService.createEmpresa(empresa));
+		verify(empresaRepositoryPort, times(0)).save(any(Empresa.class));
 	}
 }
