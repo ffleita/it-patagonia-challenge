@@ -7,8 +7,6 @@ import com.it_patagonia_challenge.it_patagonia_challenge.domain.exception.Missin
 import com.it_patagonia_challenge.it_patagonia_challenge.domain.model.Empresa;
 import com.it_patagonia_challenge.it_patagonia_challenge.domain.port.in.EmpresaUseCase;
 import com.it_patagonia_challenge.it_patagonia_challenge.domain.port.out.EmpresaRepositoryPort;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,7 +16,6 @@ public class EmpresaService implements EmpresaUseCase
 {
 
 	private EmpresaRepositoryPort empresaRepositoryPort;
-	private static final Logger log = LoggerFactory.getLogger(EmpresaService.class);
 
 	public EmpresaService(EmpresaRepositoryPort empresaRepositoryPort)
 	{
@@ -45,8 +42,7 @@ public class EmpresaService implements EmpresaUseCase
 		var empresas = empresaRepositoryPort.getEmpresasByAddedDate(minimumAddedDate);
 		if (empresas.isEmpty())
 		{
-			throw new EmpresasNotFoundException(
-					"No se encontraron empresas agregadas luego de la fecha: " + minimumAddedDate);
+			throw new EmpresasNotFoundException("No se encontraron empresas agregadas luego de la fecha: " + minimumAddedDate);
 		}
 		return empresas;
 	}
@@ -75,8 +71,7 @@ public class EmpresaService implements EmpresaUseCase
 		}
 		if (empresaRepositoryPort.findEmpresaByRazonSocial(empresa.getRazonSocial()) != null)
 		{
-			throw new DuplicatedEmpresaException(
-					"La empresa con razon social: " + empresa.getRazonSocial() + " ya existe.");
+			throw new DuplicatedEmpresaException("La empresa con razon social: " + empresa.getRazonSocial() + " ya existe.");
 		}
 	}
 }
