@@ -1,5 +1,7 @@
 package com.it_patagonia_challenge.it_patagonia_challenge.infrastructure.adapter.persistence.empresa;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,5 +19,7 @@ public interface EmpresaJpaRepository extends JpaRepository<EmpresaDAO, Long>
 	@Query("select e from EmpresaDAO e where e.fechaAdhesion >= :addedDate")
 	List<EmpresaDAO> getEmpresasByAddedDate(@Param("addedDate") LocalDate addedDate);
 
-	List<EmpresaDAO> findByCuit(Long cuit);
+	EmpresaDAO findByCuit(Long cuit);
+
+	EmpresaDAO findByRazonSocial(String razonSocial);
 }

@@ -8,10 +8,13 @@ import java.util.List;
 
 public interface EmpresaRepositoryPort
 {
-	List<Empresa> getEmpresasByTransferDate(LocalDate transferDate);
+	List<Empresa> getEmpresasByTransferDate(final LocalDate transferDate);
 
-	List<Empresa> getEmpresasByAddedDate(LocalDate addedDate);
+	List<Empresa> getEmpresasByAddedDate(final LocalDate addedDate);
 
-	Empresa save(Empresa empresa);
+	Empresa save(final Empresa empresa);
 
+	Empresa findEmpresaByCuit(final Long cuit);
+
+	Empresa findEmpresaByRazonSocial(final String razonSocial);
 }

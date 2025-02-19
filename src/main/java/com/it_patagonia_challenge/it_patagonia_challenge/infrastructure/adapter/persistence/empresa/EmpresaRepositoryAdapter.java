@@ -21,26 +21,48 @@ public class EmpresaRepositoryAdapter implements EmpresaRepositoryPort
 	}
 
 	@Override
-	public List<Empresa> getEmpresasByTransferDate(LocalDate transferDate)
+	public List<Empresa> getEmpresasByTransferDate(final LocalDate transferDate)
 	{
-		List<EmpresaDAO> empresasWithTransferenciasAfterGivenDate = empresaJpaRepository.getEmpresasByTransferDate(transferDate);
-		return empresasWithTransferenciasAfterGivenDate.stream().map(empresaDAO ->
-				new Empresa(empresaDAO.getCuit(), empresaDAO.getRazonSocial(),  empresaDAO.getFechaAdhesion())).toList();
+		final List<EmpresaDAO> empresasWithTransferenciasAfterGivenDate = empresaJpaRepository.getEmpresasByTransferDate(transferDate);
+		return empresasWithTransferenciasAfterGivenDate.stream()
+				.map(empresaDAO -> new Empresa(empresaDAO.getCuit(), empresaDAO.getRazonSocial(), empresaDAO.getFechaAdhesion()))
+				.toList();
 	}
 
 	@Override
-	public List<Empresa> getEmpresasByAddedDate(LocalDate addedDate)
+	public List<Empresa> getEmpresasByAddedDate(final LocalDate addedDate)
 	{
-		List<EmpresaDAO> empresasWithAddedDateAfterGivenDate = empresaJpaRepository.getEmpresasByAddedDate(addedDate);
-		return empresasWithAddedDateAfterGivenDate.stream().map(empresaDAO ->
-				new Empresa(empresaDAO.getCuit(), empresaDAO.getRazonSocial(),  empresaDAO.getFechaAdhesion())).toList();
+		final List<EmpresaDAO> empresasWithAddedDateAfterGivenDate = empresaJpaRepository.getEmpresasByAddedDate(addedDate);
+		return empresasWithAddedDateAfterGivenDate.stream()
+				.map(empresaDAO -> new Empresa(empresaDAO.getCuit(), empresaDAO.getRazonSocial(), empresaDAO.getFechaAdhesion()))
+				.toList();
 	}
 
 	@Override
-	public Empresa save(Empresa empresa)
+	public Empresa save(final Empresa empresa)
 	{
-		EmpresaDAO empresaDAO = new EmpresaDAO(empresa.getCuit(), empresa.getRazonSocial(), empresa.getFechaAdhesion());
-		EmpresaDAO savedEmpresa = empresaJpaRepository.save(empresaDAO);
-		return new Empresa(savedEmpresa.getCuit(), savedEmpresa.getRazonSocial(),  savedEmpresa.getFechaAdhesion());
+		final EmpresaDAO empresaDAO = new EmpresaDAO(empresa.getCuit(), empresa.getRazonSocial(), empresa.getFechaAdhesion());
+		final EmpresaDAO savedEmpresa = empresaJpaRepository.save(empresaDAO);
+		return new Empresa(savedEmpresa.getCuit(), savedEmpresa.getRazonSocial(), savedEmpresa.getFechaAdhesion());
+	}
+
+	@Override
+	public Empresa findEmpresaByCuit(final Long cuit)
+	{
+		final var empresaDAO = empresaJpaRepository.findByCuit(cuit);
+		if (empresaDAO == null) {
+			return null;
+		}
+		return new Empresa(empresaDAO.getCuit(), empresaDAO.getRazonSocial(), empresaDAO.getFechaAdhesion());
+	}
+
+	@Override
+	public Empresa findEmpresaByRazonSocial(final String razonSocial)
+	{
+		final var empresaDAO = empresaJpaRepository.findByRazonSocial(razonSocial);
+		if (empresaDAO == null) {
+			return null;
+		}
+		return new Empresa(empresaDAO.getCuit(), empresaDAO.getRazonSocial(), empresaDAO.getFechaAdhesion());
 	}
 }
